@@ -16,4 +16,6 @@ def one_shot_voting(n):
     return outcome, mean_acc
 
 if __name__ == "__main__":
-    print("hello world")
+    n = ng.generate_network("random", 20, 3)
+    for i in range(20):
+        print(i, " : ", n.agents[i].neighbors)
