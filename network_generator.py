@@ -21,6 +21,18 @@ class Network:
         accuracies = [a.get_accuracy() for a in self.agents]
         return np.mean(accuracies)
 
+    def find_guru(i):
+        def search_step(i, itr):
+            if itr > len(self.agents):
+                return -1 #ended in a cycle, there is no guru!
+            d = self.agents[i].delegate
+            if d == i:
+                return d
+            else:
+                return search_step(d, itr + 1)
+            
+        return search_step(i, 0)
+
 def init_acc_func():
     return np.random.normal(0.75, 0.05)
 
