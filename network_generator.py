@@ -7,21 +7,24 @@ class Agent:
         self.effort = effort
         self.neighbors = neighbors
         self.delegate = my_id
-        self.voting_accuracy = accuracy
+        self.guru_accuracy = accuracy
         self.expected_utility = accuracy - effort
 
-    def get_accuracy(self):
-        return self.voting_accuracy
+    def cast_ballot(self):
+        if np.random.uniform(0,1) < self.accuracy:
+            return 1
+        else:
+            return 0
 
 class Network:
     def __init__(self, n_agents):
         self.agents = [Agent(i, init_acc_func(), init_eff_func(), []) for i in range(n_agents)]
 
-    def get_mean_accuracy():
-        accuracies = [a.get_accuracy() for a in self.agents]
+    def get_mean_accuracy(self):
+        accuracies = [a.guru_accuracy for a in self.agents]
         return np.mean(accuracies)
 
-    def find_guru(i):
+    def find_guru(self, i):
         def search_step(i, itr):
             if itr > len(self.agents):
                 return -1 #ended in a cycle, there is no guru!
@@ -37,7 +40,7 @@ def init_acc_func():
     return np.random.normal(0.75, 0.05)
 
 def init_eff_func():
-    return np.random.normal(0.025, 0.01)
+    return 0 #np.random.normal(0.025, 0.01)
 
 def generate_network(net_type, n_agents, degree):
     n = Network(n_agents)
