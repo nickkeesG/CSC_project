@@ -1,4 +1,5 @@
 import numpy as np
+import networkx
 
 class Agent:
     def __init__(self, my_id, accuracy, effort, neighbors):
@@ -61,5 +62,9 @@ def generate_random(n, degree):
     return n
 
 def generate_regular(n, degree):
-    #initialize regular graph
+    graph = networkx.random_regular_graph(degree, len(n.agents))
+    edge_list = networkx.to_edgelist(graph)
+    for e in edge_list:
+        n.agents[e[0]].neighbors.append(e[1])
+        n.agents[e[1]].neighbors.append(e[0])
     return n
