@@ -11,11 +11,12 @@ class Agent:
         self.guru_accuracy = accuracy
         self.expected_utility = accuracy - effort
 
-    def cast_ballot(self):
-        if np.random.uniform(0,1) < self.accuracy:
-            return 1
-        else:
-            return 0
+    def cast_ballot(self, n_propositions): #the 0th proposition is the "correct" one
+        x = self.accuracy*2 -1
+        #P(rand(x,1) > rand(0,1)) = self.accuracy
+        prop_values = [np.random.uniform(x,1)] + [np.random.uniform(0,1) for i in range(n_propositions -1)]
+        ballot = np.argsort(prop_values)[::-1]
+        return ballot
 
 class Network:
     def __init__(self, n_agents):
@@ -50,7 +51,7 @@ def generate_network(net_type, n_agents, degree):
     elif net_type == "regular":
         return generate_regular(n, degree)
     else:
-        return "TOTAL FAILURE YOU FOOL, GIVE AN ACTUAL NETWORK TYPE DUHHHH!"
+        return "The network type given has not been found"
 
 def generate_random(n, degree):
     probability = degree / len(n.agents)

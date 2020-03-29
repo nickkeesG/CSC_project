@@ -6,3 +6,6 @@ voting_mechanism.py :
 
 network_generator.py :
     This file handles the initialization of a network and its agents.
+
+
+Please please please before you start, read "On rational delegation in liquid democracy" and read enough of "Priciples of Liquid Feedback to understand what the "Schulze Method" and a "Schwartz set" are.
