@@ -44,6 +44,14 @@ def init_acc_func():
 def init_eff_func():
     return 0 #np.random.normal(0.025, 0.01)
 
+def graph_to_net(n_agents, graph):
+    n = Network(n_agents)
+    edge_list = networkx.to_edgelist(graph)
+    for e in edge_list:
+        n.agents[e[0]].neighbors.append(e[1])
+        n.agents[e[1]].neighbors.append(e[0])
+    return n
+
 def generate_network(net_type, n_agents, degree):
     if net_type == "random":
         return generate_random(n_agents, degree)
@@ -53,6 +61,10 @@ def generate_network(net_type, n_agents, degree):
         return generate_caveman(n_agents, degree)
     elif net_type == "relaxed_caveman":
         return generate_relaxed_caveman(n_agents, degree)
+    elif net_type == "gaussian_partition":
+        return generate_gaussian_partition(n_agents, degree)
+    elif net_type == "nuclear_families":
+        return generate_nuclear_families(n_agents, degree)
     else:
         return "The network type given has not been found"
 
@@ -67,12 +79,8 @@ def generate_random(n_agents, degree):
     return n
 
 def generate_regular(n_agents, degree):
-    n = Network(n_agents)
     graph = networkx.random_regular_graph(degree, n_agents)
-    edge_list = networkx.to_edgelist(graph)
-    for e in edge_list:
-        n.agents[e[0]].neighbors.append(e[1])
-        n.agents[e[1]].neighbors.append(e[0])
+    n = graph_to_net(n_agents, graph)
     return n
 
 def generate_caveman(n_agents, degree):
@@ -80,13 +88,9 @@ def generate_caveman(n_agents, degree):
     n_cliques = int(n_agents/clique_size)
     if not n_cliques*clique_size == n_agents:
         print("Warning, size= ", str(n_cliques*clique_size), " being used for caveman graph")
-
-    n = Network(n_cliques*clique_size)    
+    
     graph = networkx.caveman_graph(n_cliques, clique_size)
-    edge_list = networkx.to_edgelist(graph)
-    for e in edge_list:
-        n.agents[e[0]].neighbors.append(e[1])
-        n.agents[e[1]].neighbors.append(e[0])
+    n = graph_to_net(n_cliques*clique_size, graph)
     return n
 
 def generate_relaxed_caveman(n_agents, degree):
@@ -97,8 +101,32 @@ def generate_relaxed_caveman(n_agents, degree):
     
     n = Network(n_cliques*clique_size)
     graph = networkx.relaxed_caveman_graph(n_cliques, clique_size, 0.1) 
-    edge_list = networkx.to_edgelist(graph)
-    for e in edge_list:
-        n.agents[e[0]].neighbors.append(e[1])
-        n.agents[e[1]].neighbors.append(e[0])
+    n = graph_to_net(n_cliques*clique_size, graph)
     return n
+
+def generate_gaussian_partition(n_agents, degree):
+    p_in = 0.8
+    mean_size = degree + 1
+    if n_agents - degree - 1 <= 0 or degree*(1-p_in) < 0:
+        print("Error in gaussian partition")
+        exit()
+    size_variance = 2
+    p_out = degree*(1-p_in) / (n_agents - degree - 1)
+    
+    graph= networkx.gaussian_random_partition_graph(n_agents, mean_size, size_variance, p_in, p_out)
+    n = graph_to_net(n_agents, graph)
+    return n
+
+def generate_nuclear_families(n_agents, degree):
+    mean_size = 4
+    p_in = 1
+    if mean_size-1 > degree or n_agents < mean_size:
+        print("Error in nuclear families")
+        exit()
+    p_out = (degree - (mean_size-1)) / (n_agents-mean_size)
+    size_variance = 1
+
+    graph = networkx.gaussian_random_partition_graph(n_agents, mean_size, size_variance, p_in, p_out)
+    n = graph_to_net(n_agents, graph)
+    return n  
+

@@ -27,7 +27,7 @@ def plot_network(n):
     plt.show() 
 
 if __name__ == "__main__":
-    n = ng.generate_network("regular", 50, 5)
+    n = ng.generate_network("gaussian_partition", 40, 3)
     plot_network(n)
 
     print(iterated_voting(n, 6))
