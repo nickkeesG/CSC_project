@@ -1,5 +1,6 @@
 import networkx
 import matplotlib.pyplot as plt
+import numpy as np
 
 import voting_mechanism as vm
 import network_generator as ng
@@ -19,7 +20,7 @@ def one_shot_voting(n):
     return outcome, mean_acc
 
 def plot_network(n):
-    graph = networkx.Graph()
+    graph = networkx.DiGraph()
     for a in n.agents:
         for x in a.neighbors:
             graph.add_edge(a.my_id, x)
@@ -27,7 +28,12 @@ def plot_network(n):
     plt.show() 
 
 if __name__ == "__main__":
-    n = ng.generate_network("gaussian_partition", 40, 3)
+    n = ng.generate_network("relaxed_caveman", 20, 4)
     plot_network(n)
+    
+    for a in n.agents:
+        print(a.my_id, " : ", a.neighbors)
+
+    #print(np.mean([len(a.neighbors) for a in n.agents]))
 
     print(iterated_voting(n, 6))
