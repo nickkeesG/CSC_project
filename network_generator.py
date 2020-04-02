@@ -57,7 +57,7 @@ def generate_network(net_type, n_agents, degree):
         return "The network type given has not been found"
 
 def generate_random(n_agents, degree):
-    n = Network(n.agents)
+    n = Network(n_agents)
     probability = degree / n_agents
     for i in range(n_agents):
         for j in range(i):
@@ -67,7 +67,7 @@ def generate_random(n_agents, degree):
     return n
 
 def generate_regular(n_agents, degree):
-    n = Network(n.agents)
+    n = Network(n_agents)
     graph = networkx.random_regular_graph(degree, n_agents)
     edge_list = networkx.to_edgelist(graph)
     for e in edge_list:
