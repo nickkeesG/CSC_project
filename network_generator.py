@@ -38,6 +38,15 @@ class Network:
             
         return search_step(i, 0)
 
+    def create_politicians(self, n_politicians):
+        politicians = np.random.choice(len(self.agents), n_politicians)
+        for p in politicians:
+            self.agents[p].neighbors = []
+            for i in range(len(self.agents)):
+                if not i in politicians:
+                    if not p in self.agents[i].neighbors:
+                        self.agents[i].neighbors.append(p)
+
 def init_acc_func():
     return np.random.normal(0.75, 0.05)
 

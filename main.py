@@ -24,11 +24,13 @@ def plot_network(n):
     for a in n.agents:
         for x in a.neighbors:
             graph.add_edge(a.my_id, x)
-    networkx.draw_networkx(graph)
+    position = networkx.spring_layout(graph,k=0.9,iterations=50)
+    networkx.draw_networkx(graph, pos=position)
     plt.show() 
 
 if __name__ == "__main__":
-    n = ng.generate_network("relaxed_caveman", 20, 4)
+    n = ng.generate_network("caveman", 50, 4)
+    n.create_politicians(2)
     plot_network(n)
     
     for a in n.agents:
