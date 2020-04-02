@@ -1,3 +1,6 @@
+import networkx
+import matplotlib.pyplot as plt
+
 import voting_mechanism as vm
 import network_generator as ng
 
@@ -15,8 +18,16 @@ def one_shot_voting(n):
     outcome = vm.vote(n)
     return outcome, mean_acc
 
+def plot_network(n):
+    graph = networkx.Graph()
+    for a in n.agents:
+        for x in a.neighbors:
+            graph.add_edge(a.my_id, x)
+    networkx.draw_networkx(graph)
+    plt.show() 
+
 if __name__ == "__main__":
     n = ng.generate_network("relaxed_caveman", 50, 5)
-    for a in n.agents:
-        print(a.my_id, " : ", a.neighbors)
+    plot_network(n)
+
     print(iterated_voting(n, 6))
