@@ -45,25 +45,58 @@ def init_eff_func():
     return 0 #np.random.normal(0.025, 0.01)
 
 def generate_network(net_type, n_agents, degree):
-    n = Network(n_agents)
     if net_type == "random":
-        return generate_random(n, degree)
+        return generate_random(n_agents, degree)
     elif net_type == "regular":
-        return generate_regular(n, degree)
+        return generate_regular(n_agents, degree)
+    elif net_type == "caveman":
+        return generate_caveman(n_agents, degree)
+    elif net_type == "relaxed_caveman":
+        return generate_relaxed_caveman(n_agents, degree)
     else:
         return "The network type given has not been found"
 
-def generate_random(n, degree):
-    probability = degree / len(n.agents)
-    for i in range(len(n.agents)):
+def generate_random(n_agents, degree):
+    n = Network(n.agents)
+    probability = degree / n_agents
+    for i in range(n_agents):
         for j in range(i):
             if np.random.uniform(0, 1) < probability:
                 n.agents[i].neighbors.append(j)
                 n.agents[j].neighbors.append(i)
     return n
 
-def generate_regular(n, degree):
-    graph = networkx.random_regular_graph(degree, len(n.agents))
+def generate_regular(n_agents, degree):
+    n = Network(n.agents)
+    graph = networkx.random_regular_graph(degree, n_agents)
+    edge_list = networkx.to_edgelist(graph)
+    for e in edge_list:
+        n.agents[e[0]].neighbors.append(e[1])
+        n.agents[e[1]].neighbors.append(e[0])
+    return n
+
+def generate_caveman(n_agents, degree):
+    clique_size = degree + 1
+    n_cliques = int(n_agents/clique_size)
+    if not n_cliques*clique_size == n_agents:
+        print("Warning, size= ", str(n_cliques*clique_size), " being used for caveman graph")
+
+    n = Network(n_cliques*clique_size)    
+    graph = networkx.caveman_graph(n_cliques, clique_size)
+    edge_list = networkx.to_edgelist(graph)
+    for e in edge_list:
+        n.agents[e[0]].neighbors.append(e[1])
+        n.agents[e[1]].neighbors.append(e[0])
+    return n
+
+def generate_relaxed_caveman(n_agents, degree):
+    clique_size = degree + 1
+    n_cliques = int(n_agents/clique_size)
+    if not n_cliques*clique_size == n_agents:
+        print("Warning, size= ", str(n_cliques*clique_size), " being used for caveman graph")
+    
+    n = Network(n_cliques*clique_size)
+    graph = networkx.relaxed_caveman_graph(n_cliques, clique_size, 0.1) 
     edge_list = networkx.to_edgelist(graph)
     for e in edge_list:
         n.agents[e[0]].neighbors.append(e[1])
