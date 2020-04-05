@@ -38,6 +38,22 @@ class Network:
                 total_gurus += 1
         return total_gurus
 
+    def get_mean_dist_guru(self):
+        def search_step(i, itr):
+            if itr > len(self.agents):
+                return -1 #ended in a cycle, there is not guru!
+            d = self.agents[i].delegate
+            if d == i:
+                return itr
+            else:
+                return search_step(d, itr + 1)
+        dists = []
+        for i in range(len(self.agents)):
+            dist = search_step(i, 0)
+            if not dist == -1:
+                dists.append(dist)
+        return np.mean(dists)
+
     def find_guru(self, i):
         def search_step(i, itr):
             if itr > len(self.agents):

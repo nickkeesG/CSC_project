@@ -73,10 +73,11 @@ def sequential_update(n):
                 d = j
         n.agents[i].delegate = d
 
+    n_updates = 0
     for i in range(len(n.agents)):
         if not n.agents[i].delegate == old_profile[i]:
-            return n, False
-    return n, True
+            n_updates += 1
+    return n, n_updates == 0, n_updates
 
 #update all agents simultaneously
 def update_delegates(n):
