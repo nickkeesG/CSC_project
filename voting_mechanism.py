@@ -55,46 +55,44 @@ class Tournament:
             return list(self.props_remaining)[0]
         self.delete_weakest_edge()
         self.find_winner()
-        
 
+#sequentially update agents
+def sequential_update(n):
+    old_profile = [n.agents[i].delegate for i in range(len(n.agents))]
+    order = [i for i in range(len(n.agents))] 
+    np.random.shuffle(order)
+    for i in order:
+        d = i
+        best_utility = n.agents[i].accuracy - n.agents[i].effort
+
+        for j in n.agents[i].neighbors:
+            n.agents[i].delegate = j
+            g = n.find_guru(i)
+            if not g == -1 and n.agents[g].accuracy > best_utility:
+                best_utility = n.agents[g].accuracy
+                d = j
+        n.agents[i].delegate = d
+
+    for i in range(len(n.agents)):
+        if not n.agents[i].delegate == old_profile[i]:
+            return n, False
+    return n, True
+
+#update all agents simultaneously
 def update_delegates(n):
     delegation_profile = [n.agents[i].delegate for i in range(len(n.agents))]
     for i in range(len(n.agents)):
-        #get the utility of the current delegation
-        current_guru = n.find_guru(i)
-        if current_guru == -1:
-            best_utility = 0.5
-        else:
-            best_utility = n.agents[current_guru].accuracy
+        best_utility = n.agents[i].accuracy - n.agents[i].effort
 
-        #switch to yourself if there is more utility
-        if n.agents[i].accuracy - n.agents[i].effort > best_utility:    
-            best_utility = n.agents[i].accuracy - n.agents[i].effort
-            delegation_profile[i] = i
-        
-        #switch to a neighbor if there is more utility
         for j in n.agents[i].neighbors:
-            g = n.find_guru(j)
-            if not g == -1 and n.agents[g].accuracy > best_utility:
-                best_utility = n.agents[g].accuracy
+            if n.agents[j].accuracy > best_utility:
+                best_utility = n.agents[j].accuracy
                 delegation_profile[i] = j
-
-    has_converged = True
-    for i in range(len(n.agents)):
-        if not n.agents[i].delegate == delegation_profile[i]:
-            has_converged = False
-            break
     
     #update the delegations of all agents
     for i in range(len(n.agents)):
         n.agents[i].delegate = delegation_profile[i]
-        g = n.find_guru(i)
-        if not g == -1: #g == -1 in the case of no guru being found (ie a cycle)
-            n.agents[i].guru_accuracy = n.agents[g].accuracy
-        else:
-            n.agents[i].guru_accuracy = 0.5
-    
-    return n, has_converged
+    return n
 
 def vote(n, n_props):
     #delegate step
