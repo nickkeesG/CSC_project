@@ -78,5 +78,18 @@ def run_full_experiment_iterated():
                 print("Effort: ", effort, "\tType: ", t, "\tDegrees: ", d, "Passes: ", np.mean(passes), " (", np.std(passes), ") BR updates: ", np.mean(updates), " (", np.std(updates), ")") 
 
 if __name__ == "__main__":
-    run_full_experiment_iterated()
-    
+    for t in ["random", "regular", "caveman", "relaxed_caveman"]:
+        for d in [8]:
+            for p in range(10):
+                all_frac_d = []
+                all_frac_g = []
+                for i in range(1000):
+                    n = ng.generate_network(t, 250, d, False)
+                    n.create_politicians(p)
+                    n = vm.update_delegates(n)
+                    frac_d = n.get_fraction_delegated_to_politician()
+                    frac_g = n.get_fraction_gurud_to_politician()
+                    all_frac_d.append(frac_d)
+                    all_frac_g.append(frac_g)
+                print("Effortless, Type: ", t, "\tDegree: ", d, "\tn_politicians: ", p, "\tfrac delegating to polit: ", np.mean(all_frac_d), "\tfrac guruing to polit: ", np.mean(all_frac_g))
+

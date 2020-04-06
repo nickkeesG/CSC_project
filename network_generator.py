@@ -9,6 +9,7 @@ class Agent:
         self.neighbors = neighbors
         self.delegate = my_id
         self.expected_utility = accuracy - effort
+        self.am_I_a_politician = False
 
     def cast_ballot(self, n_propositions): #the 0th proposition is the "correct" one
         x = self.accuracy*2 -1
@@ -70,10 +71,27 @@ class Network:
         politicians = np.random.choice(len(self.agents), n_politicians)
         for p in politicians:
             self.agents[p].neighbors = []
+            self.agents[p].am_I_a_politician = True
             for i in range(len(self.agents)):
                 if not i in politicians:
                     if not p in self.agents[i].neighbors:
                         self.agents[i].neighbors.append(p)
+    
+    def get_fraction_gurud_to_politician(self):
+        gurud_to_politician = []
+        for i in range(len(self.agents)):
+            g = self.find_guru(i)
+            if not g == i:
+                gurud_to_politician.append(self.agents[g].am_I_a_politician)
+        return np.sum([1 for i in gurud_to_politician if i == True]) / len(gurud_to_politician)
+
+    def get_fraction_delegated_to_politician(self):
+        delegated_to_politician = []
+        for i in range(len(self.agents)):
+            d = self.agents[i].delegate
+            delegated_to_politician.append(self.agents[d].am_I_a_politician)
+        return np.sum([1 for i in delegated_to_politician if i == True]) / len(delegated_to_politician)
+
 
 def init_acc_func():
     return np.random.normal(0.75, 0.05)
