@@ -1,0 +1,1 @@
+1000 trials per experiment, degree=8, agents=250. Measuring what fraction of agents have a politician as their direct delegate, and what fraction of agents have a politician as their ultimate guru. No effort.
